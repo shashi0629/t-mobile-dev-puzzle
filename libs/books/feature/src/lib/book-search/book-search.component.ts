@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Store } from '@ngrx/store';
 import {
   addToReadingList,
@@ -11,15 +11,15 @@ import {
 import { FormBuilder } from '@angular/forms';
 import { Book } from '@tmo/shared/models';
 import { MatSnackBarRef, SimpleSnackBar, MatSnackBar } from '@angular/material/snack-bar';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'tmo-book-search',
   templateUrl: './book-search.component.html',
   styleUrls: ['./book-search.component.scss']
 })
-export class BookSearchComponent implements OnInit, OnDestroy {
-  books: ReadingListBook[];
-  bookSubscription:any;
+export class BookSearchComponent implements OnInit {
+  bookSubscription$: Observable<ReadingListBook[]>;
   searchForm = this.fb.group({
     term: ''
   });
@@ -36,9 +36,7 @@ export class BookSearchComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.bookSubscription = this.store.select(getAllBooks).subscribe(books => {
-      this.books = books;
-    });
+    this.bookSubscription$ = this.store.select(getAllBooks);
   }
 
   formatDate(date: void | string) {
@@ -70,9 +68,5 @@ export class BookSearchComponent implements OnInit, OnDestroy {
     } else {
       this.store.dispatch(clearSearch());
     }
-  }
-
-  ngOnDestroy(){
-    this.bookSubscription.unsubscribe()
   }
 }
